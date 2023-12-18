@@ -159,6 +159,8 @@
 #  include "device/deviceview.h"
 #  include "device/deviceviewcontainer.h"
 #endif
+#include "engines/enginebase.h"
+#include "engines/gstengine.h"
 #include "transcoder/transcodedialog.h"
 #include "settings/settingsdialog.h"
 #include "settings/behavioursettingspage.h"
@@ -192,6 +194,10 @@
 #ifdef HAVE_MUSICBRAINZ
 #  include "musicbrainz/tagfetcher.h"
 #endif
+
+// #ifdef HAVE_VISUALISATIONS
+#include "visualisations/visualisationcontainer.h"
+// #endif
 
 #ifdef HAVE_MOODBAR
 #  include "moodbar/moodbarcontroller.h"
@@ -477,6 +483,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   ui_->action_edit_value->setIcon(IconLoader::Load("edit-rename"));
   ui_->action_selection_set_value->setIcon(IconLoader::Load("edit-rename"));
   ui_->action_equalizer->setIcon(IconLoader::Load("equalizer"));
+  ui_->action_visualisations->setIcon(IconLoader::Load("equalizer"));
   ui_->action_transcoder->setIcon(IconLoader::Load("tools-wizard"));
   ui_->action_update_collection->setIcon(IconLoader::Load("view-refresh"));
   ui_->action_full_collection_scan->setIcon(IconLoader::Load("view-refresh"));
@@ -538,6 +545,11 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   QObject::connect(ui_->action_add_stream, &QAction::triggered, this, &MainWindow::AddStream);
   QObject::connect(ui_->action_cover_manager, &QAction::triggered, this, &MainWindow::ShowCoverManager);
   QObject::connect(ui_->action_equalizer, &QAction::triggered, this, &MainWindow::ShowEqualizer);
+// #ifdef HAVE_VISUALISATIONS
+  QObject::connect(ui_->action_visualisations, &QAction::triggered, this, &MainWindow::ShowVisualisations);
+// #else
+//   ui_->action_visualisations->setEnabled(false);
+// #endif
 #if defined(HAVE_GSTREAMER)
   QObject::connect(ui_->action_transcoder, &QAction::triggered, this, &MainWindow::ShowTranscodeDialog);
 #else
@@ -578,6 +590,13 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   // Add the shuffle and repeat action groups to the menu
   ui_->action_shuffle_mode->setMenu(ui_->playlist_sequence->shuffle_menu());
   ui_->action_repeat_mode->setMenu(ui_->playlist_sequence->repeat_menu());
+
+// #ifdef HAVE_VISUALISATIONS
+// connect(ui_->action_visualisations, SIGNAL(triggered()),
+//         SLOT(ShowVisualisations()));
+// #else
+// ui_->action_visualisations->setEnabled(false);
+// #endif
 
   // Stop actions
   QMenu *stop_menu = new QMenu(this);
@@ -842,6 +861,8 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   QObject::connect(context_view_, &ContextView::AlbumEnabledChanged, this, &MainWindow::TabSwitched);
 
   // Analyzer
+  // ui_->analyzer->SetEngine(app_->player()->engine());
+  // ui_->analyzer->SetActions(ui_->action_visualisations);
   QObject::connect(ui_->analyzer, &AnalyzerContainer::WheelEvent, this, &MainWindow::VolumeWheelEvent);
 
   // Statusbar widgets
@@ -2806,6 +2827,26 @@ void MainWindow::ShowEqualizer() {
   equalizer_->show();
   equalizer_->raise();
 
+}
+
+void MainWindow::ShowVisualisations() {
+  // #ifdef HAVE_VISUALISATIONS
+  if (!visualisation_) {
+    visualisation_.reset(new VisualisationContainer);
+    
+    visualisation_->SetActions(ui_->action_previous_track,
+                               ui_->action_play_pause, ui_->action_stop,
+                               ui_->action_next_track);
+    QObject::connect(&*app_->player(), &Player::Stopped, visualisation_.get(), &VisualisationContainer::Stopped);
+    QObject::connect(&*app_->player(), &Player::ForceShowOSD, visualisation_.get(), &VisualisationContainer::SongMetadataChanged);
+    QObject::connect(&*app_->playlist_manager(), &PlaylistManager::CurrentSongChanged, visualisation_.get(), &VisualisationContainer::SongMetadataChanged);
+    
+    visualisation_->SetEngine(
+      qobject_cast<GstEngine*>(&*app_->player()->engine()));
+  }
+  
+  visualisation_->show();
+  // #endif
 }
 
 SettingsDialog *MainWindow::CreateSettingsDialog() {

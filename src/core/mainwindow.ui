@@ -505,6 +505,7 @@
     </property>
     <addaction name="action_cover_manager"/>
     <addaction name="action_equalizer"/>
+    <addaction name="action_visualisations"/>
     <addaction name="action_transcoder"/>
     <addaction name="separator"/>
     <addaction name="action_update_collection"/>
@@ -701,6 +702,11 @@
   <action name="action_equalizer">
    <property name="text">
     <string>&amp;Equalizer</string>
+   </property>
+  </action>
+  <action name="action_visualisations">
+   <property name="text">
+    <string>Visualisations</string>
    </property>
   </action>
   <action name="action_transcoder">

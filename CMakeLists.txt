@@ -441,6 +441,10 @@ optional_component(LIBMTP ON "Devices: MTP support"
   DEPENDS "libmtp" LIBMTP_FOUND
 )
 
+optional_component(VISUALISATIONS ON "Visualisations"
+  DEPENDS "opengl" OPENGL_FOUND
+)
+
 optional_component(TRANSLATIONS ON "Translations"
   DEPENDS "gettext" GETTEXT_FOUND
   DEPENDS "Qt LinguistTools" Qt${QT_VERSION_MAJOR}LinguistTools_FOUND
@@ -507,6 +511,21 @@ if(NOT CMAKE_CROSSCOMPILING)
   unset(CMAKE_REQUIRED_FLAGS)
   unset(CMAKE_REQUIRED_LIBRARIES)
 endif()
+
+option(USE_SYSTEM_PROJECTM "Don't set this option unless your system projectM library has been compiled with the Clementine patches in 3rdparty" OFF)
+option(BUNDLE_PROJECTM_PRESETS "Install Clementine's own copies of libprojectm presets - disable this if you want to use a system package instead" ON)
+
+if(HAVE_VISUALISATIONS)
+  # When/if upstream accepts our patches then these options can be used to link
+  # to system installed projectM instead.
+  if(USE_SYSTEM_PROJECTM)
+    pkg_check_modules(LIBPROJECTM libprojectM)
+  else(USE_SYSTEM_PROJECTM)
+    add_subdirectory(3rdparty/libprojectm)
+    set(LIBPROJECTM_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libprojectm)
+    set(LIBPROJECTM_LIBRARIES projectM)
+  endif(USE_SYSTEM_PROJECTM)
+endif(HAVE_VISUALISATIONS)
 
 # Set up definitions
 

@@ -632,6 +632,12 @@ if(HAVE_GLOBALSHORTCUTS)
   )
 endif(HAVE_GLOBALSHORTCUTS)
 
+if (HAVE_VISUALISATIONS)
+  find_package(OpenGL REQUIRED)
+  include_directories(${OPENGL_INCLUDE_DIR})
+  include_directories(${LIBPROJECTM_INCLUDE_DIRS})
+endif(HAVE_VISUALISATIONS)
+
 # ALSA
 optional_source(HAVE_ALSA SOURCES engine/alsadevicefinder.cpp engine/alsapcmdevicefinder.cpp)
 
@@ -815,6 +821,25 @@ optional_source(HAVE_AUDIOCD
     device/cddadevice.h
     device/cddalister.h
     device/cddasongloader.h
+)
+
+# Visualisations
+optional_source(HAVE_VISUALISATIONS
+  SOURCES
+    visualisations/projectmpresetmodel.cpp
+    visualisations/projectmvisualisation.cpp
+    visualisations/visualisationcontainer.cpp
+    visualisations/visualisationoverlay.cpp
+    visualisations/visualisationselector.cpp
+  HEADERS
+    visualisations/projectmpresetmodel.h
+    visualisations/projectmvisualisation.h
+    visualisations/visualisationcontainer.h
+    visualisations/visualisationoverlay.h
+    visualisations/visualisationselector.h
+  UI
+    visualisations/visualisationoverlay.ui
+    visualisations/visualisationselector.ui
 )
 
 # Platform specific - macOS
@@ -1043,6 +1068,10 @@ if(HAVE_AUDIOCD)
   link_directories(${LIBCDIO_LIBRARY_DIRS})
 endif()
 
+if(HAVE_VISUALISATIONS)
+  link_directories(${LIBPROJECTM_LIBRARIES})
+endif(HAVE_VISUALISATIONS)
+
 if(HAVE_LIBGPOD)
   link_directories(${LIBGPOD_LIBRARY_DIRS} ${GDK_PIXBUF_LIBRARY_DIRS})
 endif()
@@ -1203,6 +1232,24 @@ if(HAVE_AUDIOCD)
   target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBCDIO_INCLUDE_DIRS})
   target_link_libraries(strawberry_lib PRIVATE ${LIBCDIO_LIBRARIES})
 endif()
+
+# if(HAVE_VISUALISATIONS)
+#   target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS})
+#   target_link_libraries(strawberry_lib PRIVATE ${LIBPROJECTM_LIBRARIES})
+# endif(HAVE_VISUALISATIONS)
+if (HAVE_VISUALISATIONS)
+  # find_package(GLUT REQUIRED)
+  find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
+  include_directories(${QT_QTOPENGL_INCLUDE_DIR})
+
+  find_package(OpenGL REQUIRED)
+  include_directories(${OPENGL_INCLUDE_DIR})
+  include_directories(${LIBPROJECTM_INCLUDE_DIRS})
+  # target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS} Qt5::OpenGL ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
+  target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS})
+  # target_link_libraries(strawberry_lib PRIVATE ${LIBPROJECTM_LIBRARIES} ${OPENGL_LIBRARIES} Qt6::OpenGLWidgets)
+  target_link_libraries(strawberry_lib PRIVATE ${LIBPROJECTM_LIBRARIES} Qt6::OpenGLWidgets)
+endif(HAVE_VISUALISATIONS)
 
 if(HAVE_LIBGPOD)
   target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBGPOD_INCLUDE_DIRS} ${GDK_PIXBUF_INCLUDE_DIRS})

@@ -89,6 +89,9 @@ class TrackSelectionDialog;
 #ifdef HAVE_GSTREAMER
 class TranscodeDialog;
 #endif
+// #ifdef HAVE_VISUALISATIONS
+class VisualisationContainer;
+// #endif
 class Ui_MainWindow;
 class InternetSongsView;
 class InternetTabsView;
@@ -223,7 +226,8 @@ class MainWindow : public QMainWindow, public PlatformInterface {
 
   void ShowCoverManager();
   void ShowEqualizer();
-
+  void ShowVisualisations();
+  
   void ShowAboutDialog();
   void ShowErrorDialog(const QString &message);
   void ShowTranscodeDialog();
@@ -331,6 +335,10 @@ class MainWindow : public QMainWindow, public PlatformInterface {
   ScopedPtr<TrackSelectionDialog> track_selection_dialog_;
   PlaylistItemPtrList autocomplete_tag_items_;
 
+// #ifdef HAVE_VISUALISATIONS
+std::unique_ptr<VisualisationContainer> visualisation_;
+// #endif
+  
   SmartPlaylistsViewContainer *smartplaylists_view_;
 
   InternetSongsView *subsonic_view_;
