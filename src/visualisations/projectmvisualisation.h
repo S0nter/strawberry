@@ -23,7 +23,7 @@
 #include <QSet>
 #include <memory>
 
-#include "engines/bufferconsumer.h"
+#include "engine/gstbufferconsumer.h"
 
 class projectM;
 
@@ -33,7 +33,7 @@ class VisualisationContainer;
 
 class QTemporaryFile;
 
-class ProjectMVisualisation : public QGraphicsScene, public BufferConsumer {
+class ProjectMVisualisation : public QGraphicsScene, public GstBufferConsumer {
   Q_OBJECT
  public:
   ProjectMVisualisation(VisualisationContainer* container);
@@ -51,7 +51,7 @@ class ProjectMVisualisation : public QGraphicsScene, public BufferConsumer {
   int duration() const { return duration_; }
 
   // BufferConsumer
-  void ConsumeBuffer(GstBuffer* buffer, int);
+  void ConsumeBuffer(GstBuffer *buffer, const int pipeline_id, const QString &format);
 
  public slots:
   void SetTextureSize(int size);

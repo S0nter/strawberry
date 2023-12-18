@@ -186,7 +186,8 @@ void ProjectMVisualisation::SetDuration(int seconds) {
   Save();
 }
 
-void ProjectMVisualisation::ConsumeBuffer(GstBuffer* buffer, int) {
+void ProjectMVisualisation::ConsumeBuffer(GstBuffer* buffer, const int pipeline_id, const QString& format)
+{
   GstMapInfo map;
   gst_buffer_map(buffer, &map, GST_MAP_READ);
   const int samples_per_channel = map.size / sizeof(short) / 2;

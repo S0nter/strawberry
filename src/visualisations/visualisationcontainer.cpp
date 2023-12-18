@@ -30,7 +30,7 @@
 
 #include "config.h"
 #include "core/logging.h"
-#include "engines/gstengine.h"
+#include "engine/gstengine.h"
 #include "projectmvisualisation.h"
 #include "core/iconloader.h"
 #include "core/screensaver.h"
