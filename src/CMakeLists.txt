@@ -60,6 +60,7 @@ set(SOURCES
   utilities/searchparserutils.cpp
 
   engine/enginebase.cpp
+  engine/gstengine.cpp
   engine/enginedevice.cpp
   engine/devicefinders.cpp
   engine/devicefinder.cpp
@@ -318,6 +319,7 @@ set(HEADERS
   core/stylesheetloader.h
 
   engine/enginebase.h
+  engine/gstengine.h
   engine/devicefinders.h
 
   analyzer/analyzerbase.h
@@ -1069,7 +1071,9 @@ if(HAVE_AUDIOCD)
 endif()
 
 if(HAVE_VISUALISATIONS)
-  link_directories(${LIBPROJECTM_LIBRARIES})
+  link_directories(${LIBPROJECTM_LIBRARIES} ${GST_INCLUDE_DIRS})
+  # target_include_directories(strawberry_lib PRIVATE )
+  # target_link_libraries(strawberry_lib ${GST_LIBRARIES})
 endif(HAVE_VISUALISATIONS)
 
 if(HAVE_LIBGPOD)
@@ -1243,7 +1247,9 @@ if (HAVE_VISUALISATIONS)
   include_directories(${QT_QTOPENGL_INCLUDE_DIR})
 
   find_package(OpenGL REQUIRED)
-  include_directories(${OPENGL_INCLUDE_DIR})
+  include_directories(${OPENGL_INCLUDE_DIRS})
+  target_include_directories(strawberry_lib SYSTEM PRIVATE ${GST_INCLUDE_DIRS})
+target_link_libraries(strawberry_lib PRIVATE ${GST_LIBRARIES})
   include_directories(${LIBPROJECTM_INCLUDE_DIRS})
   # target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS} Qt5::OpenGL ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
   target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS})

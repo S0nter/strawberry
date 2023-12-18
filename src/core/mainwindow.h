@@ -53,6 +53,7 @@
 #include "song.h"
 #include "tagreaderclient.h"
 #include "engine/enginebase.h"
+// #include "engine/gstengine.h"
 #include "osd/osdbase.h"
 #include "playlist/playlist.h"
 #include "playlist/playlistitem.h"

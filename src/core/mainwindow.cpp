@@ -159,8 +159,6 @@
 #  include "device/deviceview.h"
 #  include "device/deviceviewcontainer.h"
 #endif
-#include "engines/enginebase.h"
-#include "engines/gstengine.h"
 #include "transcoder/transcodedialog.h"
 #include "settings/settingsdialog.h"
 #include "settings/behavioursettingspage.h"
@@ -2841,8 +2839,8 @@ void MainWindow::ShowVisualisations() {
     QObject::connect(&*app_->player(), &Player::ForceShowOSD, visualisation_.get(), &VisualisationContainer::SongMetadataChanged);
     QObject::connect(&*app_->playlist_manager(), &PlaylistManager::CurrentSongChanged, visualisation_.get(), &VisualisationContainer::SongMetadataChanged);
     
-    visualisation_->SetEngine(
-      qobject_cast<GstEngine*>(&*app_->player()->engine()));
+    // visualisation_->SetEngine(
+    //   qobject_cast<GstEngine*>(&*app_->player()->engine()));
   }
   
   visualisation_->show();
