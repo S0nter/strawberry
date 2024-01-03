@@ -101,6 +101,12 @@ jobs:
       - name: Install tagparser
         if: matrix.opensuse_version == 'tumbleweed'
         run: zypper -n --gpg-auto-import-keys in tagparser-devel
+      - name: Install kdsingleapplication-devel
+        if: matrix.opensuse_version == 'tumbleweed' && matrix.qt_version == '5'
+        run: zypper -n --gpg-auto-import-keys in kdsingleapplication-devel
+      - name: Install kdsingleapplication-qt6-devel
+        if: matrix.opensuse_version == 'tumbleweed' && matrix.qt_version == '6'
+        run: zypper -n --gpg-auto-import-keys in kdsingleapplication-qt6-devel
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -135,9 +141,9 @@ jobs:
         run: echo "opensuse_subdir=$(echo ${{matrix.opensuse_version}} | sed 's/leap:/lp/g' | sed 's/\.//g')" > $GITHUB_ENV
       - name: Upload artifacts
         if: matrix.opensuse_version != 'tumbleweed'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: opensuse-${{env.opensuse_subdir}}
+          name: opensuse-${{env.opensuse_subdir}}-qt${{matrix.qt_version}}
           path: |
             /usr/src/packages/SOURCES/*.xz
             /usr/src/packages/SRPMS/*.rpm
@@ -217,6 +223,7 @@ jobs:
             desktop-file-utils
             libappstream-glib
             hicolor-icon-theme
+            kdsingleapplication-qt6-devel
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -243,7 +250,7 @@ jobs:
         working-directory: build
         run: rpmbuild -ba ../dist/unix/strawberry.spec
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: fedora-${{matrix.fedora_version}}
           path: |
@@ -265,7 +272,7 @@ jobs:
 
   build-openmandriva:
     name: Build OpenMandriva
-    if: github.repository != 'strawberrymusicplayer/strawberry-private'
+    if: github.repository != 'strawberrymusicplayer/strawberry-private' && false
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -352,7 +359,7 @@ jobs:
         working-directory: build
         run: rpmbuild -ba ../dist/unix/strawberry.spec
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: openmandriva-${{matrix.openmandriva_version}}
           path: |
@@ -374,12 +381,12 @@ jobs:
 
   build-mageia:
     name: Build Mageia
-    if: github.repository != 'strawberrymusicplayer/strawberry-private'
+    if: github.repository != 'strawberrymusicplayer/strawberry-private' && false
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        mageia_version: [ '8' ]
+        mageia_version: [ '9' ]
     container:
       image: mageia:${{matrix.mageia_version}}
     steps:
@@ -454,7 +461,7 @@ jobs:
         working-directory: build
         run: rpmbuild -ba ../dist/unix/strawberry.spec
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mageia-${{matrix.mageia_version}}
           path: |
@@ -552,7 +559,7 @@ jobs:
       - name: Copy deb
         run: cp ../*.deb .
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debian-${{matrix.debian_version}}
           path: "*.deb"
@@ -651,7 +658,7 @@ jobs:
       - name: Copy deb
         run: cp ../*.deb ../*.ddeb .
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ubuntu-${{matrix.ubuntu_version}}
           path: |
@@ -1183,9 +1190,9 @@ jobs:
         run: makensis strawberry.nsi
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: windows-mingw
+          name: windows-mingw-${{matrix.arch}}-${{matrix.buildtype}}
           path: build/StrawberrySetup*.exe
 
       - name: SSH key setup
@@ -1543,9 +1550,9 @@ jobs:
         run: makensis strawberry.nsi
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: windows-msvc
+          name: windows-msvc-${{matrix.arch}}-${{matrix.buildtype}}
           path: build/StrawberrySetup*.exe
 
 
@@ -1557,10 +1564,10 @@ jobs:
       - build-windows-msvc
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: windows-msvc
           path: builds
+          pattern: windows-msvc-*
       - name: View files
         run: find builds
       - name: SSH key setup
@@ -1575,7 +1582,7 @@ jobs:
       - name: rsync
         shell: bash
         if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/ci'
-        run: rsync -e "ssh -p ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no" -var builds/StrawberrySetup-*-msvc-*.exe ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}:${{secrets.BUILDS_PATH}}/windows/msvc/
+        run: rsync -e "ssh -p ${{secrets.SSH_PORT}} -o StrictHostKeyChecking=no" -var builds/*/StrawberrySetup-*-msvc-*.exe ${{secrets.SSH_USER}}@${{secrets.SSH_HOST}}:${{secrets.BUILDS_PATH}}/windows/msvc/
 
 
   upload-release:
@@ -1585,7 +1592,6 @@ jobs:
     needs:
       - build-opensuse
       - build-fedora
-      - build-mageia
       - build-debian
       - build-ubuntu
       - build-windows-mingw
@@ -1620,7 +1626,7 @@ jobs:
 
       - name: Download artifacts
         if: env.release_version != ''
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: artifacts
 
