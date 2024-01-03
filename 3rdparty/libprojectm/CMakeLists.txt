@@ -4,7 +4,7 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The projectM core library.")
 
 include(CheckCXXCompilerFlag)
 
-cmake_policy(SET CMP0005 OLD)
+# cmake_policy(SET CMP0005 OLD)
 
 # This policy was only added in cmake 2.8.4
 if (CMAKE_VERSION VERSION_GREATER "2.8.3")

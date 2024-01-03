@@ -39,6 +39,8 @@ set(SOURCES
   core/scopedtransaction.cpp
   core/translations.cpp
   core/systemtrayicon.cpp
+  core/dbusscreensaver.cpp
+  core/screensaver.cpp
 
   utilities/strutils.cpp
   utilities/envutils.cpp
@@ -317,6 +319,8 @@ set(HEADERS
   core/potranslator.h
   core/mimedata.h
   core/stylesheetloader.h
+  core/dbusscreensaver.h
+  core/screensaver.h
 
   engine/enginebase.h
   engine/gstengine.h
@@ -635,8 +639,9 @@ if(HAVE_GLOBALSHORTCUTS)
 endif(HAVE_GLOBALSHORTCUTS)
 
 if (HAVE_VISUALISATIONS)
+  add_compile_definitions("HAVE_VISUALISATIONS")
   find_package(OpenGL REQUIRED)
-  include_directories(${OPENGL_INCLUDE_DIR})
+  include_directories(${OPENGL_INCLUDE_DIRS})
   include_directories(${LIBPROJECTM_INCLUDE_DIRS})
 endif(HAVE_VISUALISATIONS)
 
@@ -1071,9 +1076,7 @@ if(HAVE_AUDIOCD)
 endif()
 
 if(HAVE_VISUALISATIONS)
-  link_directories(${LIBPROJECTM_LIBRARIES} ${GST_INCLUDE_DIRS})
-  # target_include_directories(strawberry_lib PRIVATE )
-  # target_link_libraries(strawberry_lib ${GST_LIBRARIES})
+  link_directories(${LIBPROJECTM_LIBRARIES} ${GST_LIBRARIES} ${GST_INCLUDE_DIRS})
 endif(HAVE_VISUALISATIONS)
 
 if(HAVE_LIBGPOD)
@@ -1237,25 +1240,23 @@ if(HAVE_AUDIOCD)
   target_link_libraries(strawberry_lib PRIVATE ${LIBCDIO_LIBRARIES})
 endif()
 
-# if(HAVE_VISUALISATIONS)
-#   target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS})
-#   target_link_libraries(strawberry_lib PRIVATE ${LIBPROJECTM_LIBRARIES})
-# endif(HAVE_VISUALISATIONS)
 if (HAVE_VISUALISATIONS)
-  # find_package(GLUT REQUIRED)
+  find_package(GLUT REQUIRED)
   find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
-  include_directories(${QT_QTOPENGL_INCLUDE_DIR})
-
+  include_directories(${QT_QTOPENGL_INCLUDE_DIRS})
   find_package(OpenGL REQUIRED)
   include_directories(${OPENGL_INCLUDE_DIRS})
+  
+  include_directories(${GSTREAMER_INCLUDE_DIRS})
   target_include_directories(strawberry_lib SYSTEM PRIVATE ${GST_INCLUDE_DIRS})
-target_link_libraries(strawberry_lib PRIVATE ${GST_LIBRARIES})
+  target_link_libraries(strawberry_lib PRIVATE ${GSTREAMER_LIBRARIES})
+  target_include_directories(strawberry_lib PRIVATE ${GST_INCLUDE_DIRS})
+  target_link_libraries(strawberry_lib ${GST_LIBRARIES})
+  
   include_directories(${LIBPROJECTM_INCLUDE_DIRS})
-  # target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS} Qt5::OpenGL ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})
-  target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS})
-  # target_link_libraries(strawberry_lib PRIVATE ${LIBPROJECTM_LIBRARIES} ${OPENGL_LIBRARIES} Qt6::OpenGLWidgets)
+  target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBPROJECTM_INCLUDE_DIRS} ${GST_INCLUDE_DIRS})
   target_link_libraries(strawberry_lib PRIVATE ${LIBPROJECTM_LIBRARIES} Qt6::OpenGLWidgets)
-endif(HAVE_VISUALISATIONS)
+endif()
 
 if(HAVE_LIBGPOD)
   target_include_directories(strawberry_lib SYSTEM PRIVATE ${LIBGPOD_INCLUDE_DIRS} ${GDK_PIXBUF_INCLUDE_DIRS})

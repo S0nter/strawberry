@@ -193,9 +193,9 @@
 #  include "musicbrainz/tagfetcher.h"
 #endif
 
-// #ifdef HAVE_VISUALISATIONS
+#ifdef HAVE_VISUALISATIONS
 #include "visualisations/visualisationcontainer.h"
-// #endif
+#endif
 
 #ifdef HAVE_MOODBAR
 #  include "moodbar/moodbarcontroller.h"
@@ -543,11 +543,11 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   QObject::connect(ui_->action_add_stream, &QAction::triggered, this, &MainWindow::AddStream);
   QObject::connect(ui_->action_cover_manager, &QAction::triggered, this, &MainWindow::ShowCoverManager);
   QObject::connect(ui_->action_equalizer, &QAction::triggered, this, &MainWindow::ShowEqualizer);
-// #ifdef HAVE_VISUALISATIONS
+#if defined(HAVE_VISUALISATIONS)
   QObject::connect(ui_->action_visualisations, &QAction::triggered, this, &MainWindow::ShowVisualisations);
-// #else
-//   ui_->action_visualisations->setEnabled(false);
-// #endif
+#else
+  ui_->action_visualisations->setEnabled(false);
+#endif
 #if defined(HAVE_GSTREAMER)
   QObject::connect(ui_->action_transcoder, &QAction::triggered, this, &MainWindow::ShowTranscodeDialog);
 #else
@@ -588,13 +588,6 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   // Add the shuffle and repeat action groups to the menu
   ui_->action_shuffle_mode->setMenu(ui_->playlist_sequence->shuffle_menu());
   ui_->action_repeat_mode->setMenu(ui_->playlist_sequence->repeat_menu());
-
-// #ifdef HAVE_VISUALISATIONS
-// connect(ui_->action_visualisations, SIGNAL(triggered()),
-//         SLOT(ShowVisualisations()));
-// #else
-// ui_->action_visualisations->setEnabled(false);
-// #endif
 
   // Stop actions
   QMenu *stop_menu = new QMenu(this);
@@ -861,7 +854,7 @@ MainWindow::MainWindow(Application *app, SharedPtr<SystemTrayIcon> tray_icon, OS
   // Analyzer
   // ui_->analyzer->SetEngine(app_->player()->engine());
   // ui_->analyzer->SetActions(ui_->action_visualisations);
-  QObject::connect(ui_->analyzer, &AnalyzerContainer::WheelEvent, this, &MainWindow::VolumeWheelEvent);
+  // QObject::connect(ui_->analyzer, &AnalyzerContainer::WheelEvent, this, &MainWindow::VolumeWheelEvent);
 
   // Statusbar widgets
   ui_->playlist_summary->setMinimumWidth(QFontMetrics(font()).horizontalAdvance("WW selected of WW tracks - [ WW:WW ]"));
@@ -2828,10 +2821,13 @@ void MainWindow::ShowEqualizer() {
 }
 
 void MainWindow::ShowVisualisations() {
-  // #ifdef HAVE_VISUALISATIONS
+  qLog(Warning) << "Visualisation show";
+#if defined(HAVE_VISUALISATIONS)
+  qLog(Warning) << "Visualisation show 2";
   if (!visualisation_) {
-    visualisation_.reset(new VisualisationContainer);
-    
+    qLog(Warning) << "Visualisation show 3";
+    visualisation_.reset(new VisualisationContainer(this));
+  
     visualisation_->SetActions(ui_->action_previous_track,
                                ui_->action_play_pause, ui_->action_stop,
                                ui_->action_next_track);
@@ -2839,12 +2835,11 @@ void MainWindow::ShowVisualisations() {
     QObject::connect(&*app_->player(), &Player::ForceShowOSD, visualisation_.get(), &VisualisationContainer::SongMetadataChanged);
     QObject::connect(&*app_->playlist_manager(), &PlaylistManager::CurrentSongChanged, visualisation_.get(), &VisualisationContainer::SongMetadataChanged);
     
-    // visualisation_->SetEngine(
-    //   qobject_cast<GstEngine*>(&*app_->player()->engine()));
+    visualisation_->SetEngine(qobject_cast<GstEngine*>(&*app_->player()->engine()));
   }
   
   visualisation_->show();
-  // #endif
+#endif
 }
 
 SettingsDialog *MainWindow::CreateSettingsDialog() {

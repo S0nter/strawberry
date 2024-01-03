@@ -40,9 +40,9 @@ VisualisationOverlay::VisualisationOverlay(QWidget* parent)
   setMouseTracking(true);
 
   ui_->settings->setIcon(IconLoader::Load("configure"));
-  connect(ui_->settings, SIGNAL(clicked()), SLOT(ShowSettingsMenu()));
+  QObject::connect(ui_->settings, SIGNAL(clicked()), SLOT(ShowSettingsMenu()));
 
-  connect(fade_timeline_, SIGNAL(valueChanged(qreal)),
+  QObject::connect(fade_timeline_, SIGNAL(valueChanged(qreal)),
           SIGNAL(OpacityChanged(qreal)));
 }
 

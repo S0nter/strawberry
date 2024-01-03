@@ -20,6 +20,7 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFile>
+#include <QObject>
 #include <QOpenGLWidget>
 #include <QGraphicsView>
 #include <QMessageBox>
@@ -60,8 +61,7 @@ ProjectMVisualisation::ProjectMVisualisation(VisualisationContainer* container)
       texture_size_(512),
       pixel_ratio_(container->devicePixelRatio()),
       container_(container) {
-  connect(this, SIGNAL(sceneRectChanged(QRectF)),
-          SLOT(SceneRectChanged(QRectF)));
+  QObject::connect(this, &ProjectMVisualisation::sceneRectChanged, this, &ProjectMVisualisation::SceneRectChanged);
 
   for (int i = 0; i < TOTAL_RATING_TYPES; ++i)
     default_rating_list_.push_back(3);

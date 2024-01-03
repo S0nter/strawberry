@@ -51,7 +51,7 @@ class ProjectMVisualisation : public QGraphicsScene, public GstBufferConsumer {
   int duration() const { return duration_; }
 
   // BufferConsumer
-  void ConsumeBuffer(GstBuffer *buffer, const int pipeline_id, const QString &format);
+  void ConsumeBuffer(GstBuffer* buffer, const int pipeline_id, const QString &format);
 
  public slots:
   void SetTextureSize(int size);

@@ -443,6 +443,7 @@ optional_component(LIBMTP ON "Devices: MTP support"
 
 optional_component(VISUALISATIONS ON "Visualisations"
   DEPENDS "opengl" OPENGL_FOUND
+  DEPENDS "gstreamer" HAVE_GSTREAMER
 )
 
 optional_component(TRANSLATIONS ON "Translations"
@@ -516,6 +517,7 @@ option(USE_SYSTEM_PROJECTM "Don't set this option unless your system projectM li
 option(BUNDLE_PROJECTM_PRESETS "Install Clementine's own copies of libprojectm presets - disable this if you want to use a system package instead" ON)
 
 if(HAVE_VISUALISATIONS)
+  message("VIIIIIIIIIIII")
   # When/if upstream accepts our patches then these options can be used to link
   # to system installed projectM instead.
   if(USE_SYSTEM_PROJECTM)

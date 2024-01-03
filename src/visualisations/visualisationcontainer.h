@@ -22,6 +22,7 @@
 #include <QGraphicsView>
 
 #include "core/song.h"
+#include "engine/gstengine.h"
 
 class GstEngine;
 class ProjectMVisualisation;

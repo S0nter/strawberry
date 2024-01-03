@@ -53,7 +53,7 @@
 #include "song.h"
 #include "tagreaderclient.h"
 #include "engine/enginebase.h"
-// #include "engine/gstengine.h"
+#include "engine/gstengine.h"
 #include "osd/osdbase.h"
 #include "playlist/playlist.h"
 #include "playlist/playlistitem.h"
@@ -90,9 +90,9 @@ class TrackSelectionDialog;
 #ifdef HAVE_GSTREAMER
 class TranscodeDialog;
 #endif
-// #ifdef HAVE_VISUALISATIONS
+#ifdef HAVE_VISUALISATIONS
 class VisualisationContainer;
-// #endif
+#endif
 class Ui_MainWindow;
 class InternetSongsView;
 class InternetTabsView;
@@ -336,9 +336,9 @@ class MainWindow : public QMainWindow, public PlatformInterface {
   ScopedPtr<TrackSelectionDialog> track_selection_dialog_;
   PlaylistItemPtrList autocomplete_tag_items_;
 
-// #ifdef HAVE_VISUALISATIONS
+#ifdef HAVE_VISUALISATIONS
 std::unique_ptr<VisualisationContainer> visualisation_;
-// #endif
+#endif
   
   SmartPlaylistsViewContainer *smartplaylists_view_;
 
