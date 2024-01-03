@@ -21,6 +21,7 @@
 #ifndef TESTOBJECTDECORATORS_H
 #define TESTOBJECTDECORATORS_H
 
+#include <QObject>
 
 class QProgressBar;
 class QStyleOptionProgressBar;
