@@ -16,7 +16,7 @@ Easter Egg Parameter = 1
 Hard Cut Sensitivity = 10       # Lower to make hard cuts more frequent
 Aspect Correction = true	# Custom Shape Aspect Correction
 
-Preset Path = /usr/share/projectM/presets # preset location
-Title Font = /usr/share/projectM/fonts/Vera.ttf
-Menu Font = /usr/share/projectM/fonts/VeraMono.ttf
+Preset Path = /usr/local/share/projectM/presets # preset location
+Title Font = /usr/local/share/projectM/fonts/Vera.ttf
+Menu Font = /usr/local/share/projectM/fonts/VeraMono.ttf
  

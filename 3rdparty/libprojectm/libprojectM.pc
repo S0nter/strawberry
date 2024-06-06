@@ -1,9 +1,9 @@
-prefix=/usr
-exec_prefix=/usr
+prefix=/usr/local
+exec_prefix=/usr/local
 libdir=
-includedir=/usr/include
-pkgdatadir=/usr/share/projectM
-sysconfdir=/usr/share/projectM
+includedir=/usr/local/include
+pkgdatadir=/usr/local/share/projectM
+sysconfdir=/usr/local/share/projectM
 
 Name: libprojectM
 Version: 2.0.0
